@@ -1,0 +1,150 @@
+//index.html
+  <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="style.css" />
+  <title>PWA E-Commerce</title>
+</head>
+<body>
+  <header>
+    <h1>ShopNow</h1>
+  </header>
+  <main>
+    <section class="products">
+      <article class="product">
+        <h2>dairymilk</h2>
+        <p>$100</p>
+        <button>Add to Cart</button>
+      </article>
+      <article class="product">
+        <h2>milkybar</h2>
+        <p>$50p>
+        <button>Add to Cart</button>
+        <article class="product">
+            <h2>Sneakers</h2>
+            <p>$10p>
+            <button>Add to Cart</button>
+          </article>
+          <article class="product">
+            <h2>5star
+            <p>$129.99</p>
+            <button>Add to Cart</button>
+      </article>
+    </section>
+  </main>
+
+  <button id="subscribe">Enable Notifications</button>
+
+  <script src="script.js"></script>
+</body>
+</html>
+
+  //style.css
+  body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  background-color: #111;
+  color: white;
+  padding: 1rem;
+  text-align: center;
+}
+
+.products {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.product {
+  border: 1px solid #ddd;
+  padding: 1rem;
+  border-radius: 10px;
+  text-align: center;
+}
+
+button {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 0.6rem 1rem;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+//manifest.json
+
+  {
+  "name": "ShopNow - E-Commerce PWA",
+  "short_name": "ShopNow",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#111111",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
+
+
+//service-worker.js
+  const CACHE_NAME = 'shopnow-cache-v1';
+const urlsToCache = [
+  '/',
+  '/index.html',
+  '/style.css',
+  '/script.js',
+  '/icons/icon-192.png',
+  '/icons/icon-512.png'
+];
+
+// Install
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
+  );
+});
+
+// Fetch
+self.addEventListener('fetch', event => {
+  event.respondWith(
+    caches.match(event.request)
+      .then(response => response || fetch(event.request))
+  );
+});
+//script.js
+
+// Register Service Worker
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/service-worker.js')
+    .then(() => console.log('Service Worker Registered'));
+}
+
+// Mock Push Notifications (real implementation requires a backend)
+document.getElementById('subscribe').addEventListener('click', () => {
+  Notification.requestPermission().then(permission => {
+    if (permission === 'granted') {
+      new Notification('Thanks for subscribing!', {
+        body: 'You’ll get updates from ShopNow.',
+        icon: '/icons/icon-192.png'
+      });
+    }
+  });
+});
+
